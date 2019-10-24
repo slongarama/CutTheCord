@@ -8,7 +8,7 @@ const int piezoPin = 32;
 const int foilPin = 27;
 
 const int ledPin = 21;
-const int ledThreshold = 25;
+const int ledThreshold = 30;
 
 /* Put your SSID & Password */
 const char* ssid = "ESP32_Sabrina";  // Enter SSID here
@@ -51,10 +51,12 @@ void setup() {
 
 void loop() {
   int photoVal = analogRead(photoCell);
-  //  Serial.println(photoVal);
+  Serial.print(photoVal);
+  Serial.print("--");
 
   int piezoVal = analogRead(piezoPin);
-  Serial.println(piezoVal);
+  Serial.print(piezoVal);
+  Serial.print("--");
 
   int touchVal = touchRead(foilPin);
   Serial.println(touchVal);

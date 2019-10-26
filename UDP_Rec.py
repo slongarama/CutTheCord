@@ -6,12 +6,11 @@ import serial # sudo pip install pyserial
 import re
 import gpiozero as gp
 
-
 # const int photoCell = 34;
 # const int piezoPin = 32;
 # const int foilPin = 27;
 # const int ledPin = 21;
-# const int ledThreshold = 30;
+# const int ledThreshold = 40;
 
 def parseUDP(raw_input):
     str_input = str(raw_input)

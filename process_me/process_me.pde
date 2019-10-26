@@ -6,7 +6,7 @@ SinOsc sine;
 int photoVal;
 int piezoVal;
 int touchVal;
-int touchThreshold = 30;
+int touchThreshold = 40;
 
 float amp = 1;
 float freq;
@@ -31,11 +31,11 @@ void draw() {
   
   // Map piezoVal to frequency modulator
   if (piezoVal > 2000) piezoVal = 2000;
-  freqMod = map(piezoVal, 0, 2000, 0.5, 2.5);
+  freqMod = map(piezoVal, 0, 2000, 1, 2.5);
   freq = freq * freqMod;
 
   // If capacitive touch is on, add 1.0 to frequency
-  if (touchVal < touchThreshold) add = 1;
+  if (touchVal < touchThreshold) add = 1.5;
   else add = 0.0;
   
   sine.set(freq, amp, add, 0);

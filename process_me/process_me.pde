@@ -6,63 +6,51 @@ SinOsc sine;
 int photoVal;
 int piezoVal;
 int touchVal;
+int touchThreshold = 30;
+
+float amp = 1;
+float freq;
+float freqMod;
+float add;
 
 OscP5 oscP5;
-NetAddress myRemoteLocation;
-
 
 void setup() {
-  size(640, 360);
+  size(720, 480);
   sine = new SinOsc(this);
-  //sine.freq(10);
   sine.play();
+  sine.amp(amp);
+
+  oscP5 = new OscP5(this, 44444);   //listening
 }
 
 
 void draw() {
-  sine.pan(map(mouseX, 0, width, -1.0, 1.0));
-  //sine.freq(0);
-  //sine.play();
-}
-
-void mousePressed() {
-  float freq=200;
-  float amp=0.5;
-  float add=0.0;
-  float pos=1;
-  sine.set(freq, amp, add, pos);
-}
-
-/* incoming osc message are forwarded to the oscEvent method. */
-void oscEvent(OscMessage theOscMessage) {
-  /* print the address pattern and the typetag of the received OscMessage */
-  print("### received an osc message.");
-  print(" addrpattern: "+theOscMessage.addrPattern());
-  println(" typetag: "+theOscMessage.typetag());
-}
-
-/* incoming osc message are forwarded to the oscEvent method. */
-void oscEvent(OscMessage theOscMessage) {
-  /* print the address pattern and the typetag of the received OscMessage */
-  print("### received an osc message.");
-  print(" addrpattern: "+theOscMessage.addrPattern());
-  println(" typetag: "+theOscMessage.typetag());
-}
-
-void oscEvent(OscMessage theOscMessage) {
-  /* check if theOscMessage has the address pattern we are looking for. */
+  // Map photoVal from 400Hz to 1000Hz for frequency  
+  freq = map(photoVal, 0, 4095, 400.0, 1000.0);
   
-  if(theOscMessage.checkAddrPattern("/test")==true) {
-    /* check if the typetag is the right one. */
-    if(theOscMessage.checkTypetag("ifs")) {
-      /* parse theOscMessage and extract the values from the osc message arguments. */
-      int firstValue = theOscMessage.get(0).intValue();  
-      float secondValue = theOscMessage.get(1).floatValue();
-      String thirdValue = theOscMessage.get(2).stringValue();
-      print("### received an osc message /test with typetag ifs.");
-      println(" values: "+firstValue+", "+secondValue+", "+thirdValue);
-      return;
-    }  
-  } 
-  println("### received an osc message. with address pattern "+theOscMessage.addrPattern());
+  // Map piezoVal to frequency modulator
+  if (piezoVal > 2000) piezoVal = 2000;
+  freqMod = map(piezoVal, 0, 2000, 0.5, 2.5);
+  freq = freq * freqMod;
+
+  // If capacitive touch is on, add 1.0 to frequency
+  if (touchVal < touchThreshold) add = 1;
+  else add = 0.0;
+  
+  sine.set(freq, amp, add, 0);
+}
+
+/* incoming osc message are forwarded to the oscEvent method. */
+void oscEvent(OscMessage theOscMessage) {
+  print("### received an osc message.");
+  println(" addrpattern: "+theOscMessage.addrPattern());
+
+  photoVal = theOscMessage.get(0).intValue();
+  piezoVal = theOscMessage.get(1).intValue();
+  touchVal = theOscMessage.get(2).intValue();
+
+  print(theOscMessage.get(0).intValue() + "--");
+  print(theOscMessage.get(1).intValue() + "--");
+  println(theOscMessage.get(2).intValue());
 }
